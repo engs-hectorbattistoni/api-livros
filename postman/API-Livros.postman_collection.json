@@ -1,0 +1,392 @@
+{
+  "info": {
+    "name": "API Livros",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "livroId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Criar livro (201)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set(\"isbn\", String(Date.now()));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+              "const j = pm.response.json();",
+              "pm.test(\"Retorna o título\", () => pm.expect(j.data.titulo).to.eql(\"Clean Code\"));",
+              "pm.collectionVariables.set(\"livroId\", j.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"titulo\": \"Clean Code\",\n  \"autor\": \"Robert C. Martin\",\n  \"ano_publicacao\": 2008,\n  \"isbn\": \"{{isbn}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/livros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "livros"
+          ]
+        }
+      }
+    },
+    {
+      "name": "2. Listar livros (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Tem data\", () => pm.expect(pm.response.json()).to.have.property(\"data\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/livros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "livros"
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Buscar livro (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/livros/{{livroId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "livros",
+            "{{livroId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Atualizar livro (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Título atualizado\", () => pm.expect(pm.response.json().data.titulo).to.eql(\"Clean Code (2ª ed.)\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"titulo\": \"Clean Code (2ª ed.)\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/livros/{{livroId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "livros",
+            "{{livroId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Criar inválido (422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 422\", () => pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/livros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "livros"
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. Buscar inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/livros/999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "livros",
+            "999999"
+          ]
+        }
+      }
+    },
+    {
+      "name": "7. Excluir livro (204)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 204\", () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/livros/{{livroId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "livros",
+            "{{livroId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "8. API externa: pokemon (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"É o pikachu\", () => pm.expect(pm.response.json().nome).to.eql(\"pikachu\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/externo/pokemon/pikachu",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "externo",
+            "pokemon",
+            "pikachu"
+          ]
+        }
+      }
+    },
+    {
+      "name": "9. API externa: pokemon inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/externo/pokemon/xyz",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "externo",
+            "pokemon",
+            "xyz"
+          ]
+        }
+      }
+    }
+  ]
+}
